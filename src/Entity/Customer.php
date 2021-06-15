@@ -7,20 +7,29 @@ use App\Repository\CustomerRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /* NOTE firstName partial permet de filtrer autrement qu'en mode exact, il va chercher les résultats qui contiennent l'expression
-voir si besoin la doc d'api platform. Si pas d'option par défaut après Searchfilter::class, fera des filtres exacts sur tous les champs */
+voir si besoin la doc d'api platform. Si pas d'option par défaut après Searchfilter::class, fera des filtres exacts sur tous les champs 
 
-/* permet de choisir ce qui va être affiché lors de la normalisation, 
-càd lorsque l'API veut renvoyer du json au cours de la serialization */
+   NOTE permet de choisir ce qui va être affiché lors de la normalisation, 
+càd lorsque l'API veut renvoyer du json au cours de la serialization 
+
+   NOTE collectionOperations et itemOperations pour activer et désactiver des opérations sur une ressource */
 
 /**
- * @ORM\Entity(repositoryClass=CustomerRepository::class)
+ * @ORM\Entity(repositoryClass="App\Repository\CustomerRepository")
  * @ApiResource (
+ * collectionOperations={"GET", "POST"},
+ * itemOperations={"GET", "PUT", "DELETE"},
+ * subresourceOperations={
+ *      "invoices_get_subresource"={"path"="/customers/{id}/invoices"}
+ * },
  * normalizationContext={ 
  *      "groups"={"customers_read"}
  * }
@@ -41,36 +50,48 @@ class Customer
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"customers_read", "invoices_read"})
+     * @Assert\NotBlank(message="Le prénom du customer est obligatoire")
+     * @Assert\Length(min=3, minMessage="Le prénom doit faire entre 3 et 255 caractères", max=255, maxMessage="Le prénom doit faire entre 3 et 255 caractères")
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"customers_read", "invoices_read"})
+     * @Assert\NotBlank(message="Le nom de famille du customer est obligatoire")
+     * @Assert\Length(min=3, minMessage="Le nom de famille doit faire entre 3 et 255 caractères", max=255, maxMessage="Le nom de famille doit faire entre 3 et 255 caractères")
+
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"customers_read", "invoices_read"})
+     * @Assert\NotBlank(message="Le prénom du customer est obligatoire")
+     * @Assert\Length(min=3, minMessage="Le prénom doit faire entre 3 et 255 caractères", max=255, maxMessage="Le prénom doit faire entre 3 et 255 caractères")
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"customers_read", "invoices_read"})
+     * @Assert\NotBlank(message="L'adresse email du customer est obligatoire")
+     * @Assert\Email(message="Le format de l'adresse email doit être valide")
+
      */
     private $company;
 
     /**
      * @ORM\OneToMany(targetEntity=Invoice::class, mappedBy="customer")
      * @Groups({"customers_read"})
+     * @ApiSubresource
      */
     private $invoices;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
      * @Groups({"customers_read"})
+     * @Assert\NotBlank(message="L'utilisateur est obligatoire")
      */
     private $user;
 

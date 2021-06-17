@@ -75,9 +75,6 @@ class Customer
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"customers_read", "invoices_read"})
-     * @Assert\NotBlank(message="L'adresse email du customer est obligatoire")
-     * @Assert\Email(message="Le format de l'adresse email doit être valide")
-
      */
     private $company;
 

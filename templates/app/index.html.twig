@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title "Mon application React" %}
+
+{% block stylesheets %}             {# entrypoints.json dans le build, va donner la liste des entrées #}
+    {{ encore_entry_link_tags('app') }} {# va chercher l'entrée app pour le css #}
+{% endblock %}
+
+{% block body %}
+    <div id="app"></div>
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }} {# va chercher l'entrée app pour le js #}
+{% endblock %}

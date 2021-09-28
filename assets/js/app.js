@@ -6,36 +6,63 @@
  */
 
 // les imports importants
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import Navbar from "./components/Navbar";
-import HomePage from "./components/pages/HomePage";
-import { HashRouter, Switch, Route } from "react-router-dom";
-
-// any CSS you import will output into a single css file (app.css in this case)
-import "../styles/app.css";
-
+import {
+    HashRouter, Route, Switch, withRouter
+} from "react-router-dom";
 // start the Stimulus application
 import "../bootstrap";
+// any CSS you import will output into a single css file (app.css in this case)
+import "../styles/app.css";
+import Navbar from "./components/Navbar";
 import CustomersPage from "./components/pages/CustomersPage";
+import HomePage from "./components/pages/HomePage";
 // import CustomersPageWithPagination from "./components/pages/CustomersPage"; // CustomersPageWithPagination si on veut utiliser la pagination d'ApiPlatform
 import InvoicesPage from "./components/pages/InvoicesPage";
+import LoginPage from "./components/pages/LoginPage";
+import PrivateRoute from "./components/PrivateRoute";
+import AuthAPI from "./components/services/AuthAPI";
+import AuthContext from "./contexts/AuthContext";
 
-console.log("hello world !");
+
+AuthAPI.setup();
 
 const App = () => {
-    return ( // component = CustomersPageWithPagination si on veut utiliser la pagination d'ApiPlatform
-        <HashRouter>
-            <Navbar />
+    // TODO : il faudrait qu'on demande à notre AuthAPI si on est connecté ou pas
+    const [isAuthenticated, setIsAuthenticated] = useState(
+        AuthAPI.isAuthenticated()
+    );
 
-            <main className="container pt-5">
-                <Switch>
-                    <Route path="/invoices" component={InvoicesPage} />  
-                    <Route path="/customers" component={CustomersPage} />  
-                    <Route path="/" component={HomePage} />
-                </Switch>
-            </main>
-        </HashRouter>
+    console.log(isAuthenticated);
+
+    const NavbarWithRouter = withRouter(Navbar);
+
+    // component = CustomersPageWithPagination si on veut utiliser lapagination d'ApiPlatform
+    return (
+        <AuthContext.Provider value={{
+            isAuthenticated,
+            setIsAuthenticated, // revient à dire setIsAuthenticated: setIsAuthenticated, pas besoin de répéter deux fois la même chosse en js
+        }}>
+            <HashRouter>
+                <NavbarWithRouter />
+
+                <main className="container pt-5">
+                    <Switch>
+                        <Route path="/login" component={LoginPage} />
+                        <PrivateRoute
+                            path="/invoices"
+                            component={InvoicesPage}
+                        />
+                        <PrivateRoute
+                            path="/customers"
+                            component={CustomersPage}
+                        />
+                        <Route path="/" component={HomePage} />
+                    </Switch>
+                </main>
+            </HashRouter>
+        </AuthContext.Provider>
     );
 };
 

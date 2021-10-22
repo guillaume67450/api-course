@@ -1,7 +1,7 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import Pagination from "../Pagination";
-
+import { Link } from "react-router-dom";
 import InvoicesAPI from "../services/InvoicesAPI";
 
 const STATUS_CLASSES = {
@@ -47,10 +47,10 @@ const InvoicesPage = (props) => {
     };
 
     // gestion de la suppression
-    const handleDelete = async id => {
+    const handleDelete = async (id) => {
         const originalInvoices = [...invoices];
 
-        setInvoices(invoices.filter(invoice => invoice.id !== id));
+        setInvoices(invoices.filter((invoice) => invoice.id !== id));
 
         try {
             await InvoicesAPI.delete(id);
@@ -82,8 +82,12 @@ const InvoicesPage = (props) => {
 
     return (
         <>
-            <h1>Liste des factures</h1>
-
+            <div className="d-flex justify-content-between align-items-center">
+                <h1>Liste des factures</h1>
+                <Link className="btn btn-primary" to="/invoices/new">
+                    Créer une facture
+                </Link>
+            </div>
             <div className="form-group">
                 <input
                     type="text"
@@ -130,9 +134,12 @@ const InvoicesPage = (props) => {
                                 {invoice.amount.toLocaleString()} €
                             </td>
                             <td>
-                                <button className="btn btn-sm btn-primary">
+                                <Link
+                                    to={"/invoices/" + invoice.id}
+                                    className="btn btn-sm btn-primary"
+                                >
                                     Editer
-                                </button>
+                                </Link>
                                 <button
                                     className="btn btn-sm btn-danger"
                                     onClick={() => handleDelete(invoice.id)}

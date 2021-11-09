@@ -41,8 +41,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Invoice
 {
     /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
+     * @ORM\Id
+     * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups({"invoices_read", "customers_read", "invoices_subresource"})
      */
